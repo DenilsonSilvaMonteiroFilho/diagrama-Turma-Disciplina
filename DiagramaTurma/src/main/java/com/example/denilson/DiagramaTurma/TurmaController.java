@@ -1,9 +1,16 @@
 package com.example.denilson.DiagramaTurma;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+@RestController
 public class TurmaController {
 
     private final TurmaRepository repository;
@@ -12,20 +19,31 @@ public class TurmaController {
         this.repository = repository;
     }
 
-    @GetMapping("/turmas")
-    List<Turma> all() {
-        return repository.findAll();
+    @GetMapping("/employees")
+    CollectionModel<EntityModel<Turma>> all() {
+
+        List<EntityModel<Turma>> employees = repository.findAll().stream()
+                .map(employee -> EntityModel.of(employee,
+                        linkTo(methodOn(TurmaController.class).one(employee.getId())).withSelfRel(),
+                        linkTo(methodOn(TurmaController.class).all()).withRel("employees")))
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(employees, linkTo(methodOn(TurmaController.class).all()).withSelfRel());
     }
     @PostMapping("/turma")
     Turma newEmployee(@RequestBody Turma newTurma) {
         return repository.save(newTurma);
     }
 
-    @GetMapping("/turma/{id}")
-    Turma one(@PathVariable Long id) {
+    @GetMapping("/employees/{id}")
+    EntityModel<Turma> one(@PathVariable Long id) {
 
-        return repository.findById(id)
+        Turma employee = repository.findById(id) //
                 .orElseThrow(() -> new TurmaNotFoundException(id));
+
+        return EntityModel.of(employee, //
+                linkTo(methodOn(TurmaController.class).one(id)).withSelfRel(),
+                linkTo(methodOn(TurmaController.class).all()).withRel("turma"));
     }
 
     @PutMapping("/turma/{id}")
