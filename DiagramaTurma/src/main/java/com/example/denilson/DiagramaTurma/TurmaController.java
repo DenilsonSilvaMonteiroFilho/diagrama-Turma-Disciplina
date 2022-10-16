@@ -19,7 +19,7 @@ public class TurmaController {
         this.repository = repository;
     }
 
-    @GetMapping("/employees")
+    @GetMapping("/turmas")
     CollectionModel<EntityModel<Turma>> all() {
 
         List<EntityModel<Turma>> employees = repository.findAll().stream()
