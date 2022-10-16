@@ -15,17 +15,18 @@ public class TurmaController {
 
     private final TurmaRepository repository;
 
-    TurmaController(TurmaRepository repository){
+    private final TurmaModelAssembler assembler;
+
+    TurmaController(TurmaRepository repository, TurmaModelAssembler assembler){
         this.repository = repository;
+        this.assembler = assembler;
     }
 
     @GetMapping("/turmas")
     CollectionModel<EntityModel<Turma>> all() {
 
-        List<EntityModel<Turma>> employees = repository.findAll().stream()
-                .map(employee -> EntityModel.of(employee,
-                        linkTo(methodOn(TurmaController.class).one(employee.getId())).withSelfRel(),
-                        linkTo(methodOn(TurmaController.class).all()).withRel("employees")))
+        List<EntityModel<Turma>> employees = repository.findAll().stream() //
+                .map(assembler::toModel) //
                 .collect(Collectors.toList());
 
         return CollectionModel.of(employees, linkTo(methodOn(TurmaController.class).all()).withSelfRel());
@@ -35,20 +36,17 @@ public class TurmaController {
         return repository.save(newTurma);
     }
 
-    @GetMapping("/employees/{id}")
+    @GetMapping("/turma/{id}")
     EntityModel<Turma> one(@PathVariable Long id) {
 
-        Turma employee = repository.findById(id) //
+        Turma turma = repository.findById(id) //
                 .orElseThrow(() -> new TurmaNotFoundException(id));
 
-        return EntityModel.of(employee, //
-                linkTo(methodOn(TurmaController.class).one(id)).withSelfRel(),
-                linkTo(methodOn(TurmaController.class).all()).withRel("turma"));
+        return assembler.toModel(turma);
     }
 
     @PutMapping("/turma/{id}")
     Turma replaceTurma(@RequestBody Turma newTurma, @PathVariable Long id) {
-        /*NAO ENTENDI ISSO ->*/
         return repository.findById(id)
                 .map(turma -> {
                     turma.setDisciplina(newTurma.getDisciplina());
