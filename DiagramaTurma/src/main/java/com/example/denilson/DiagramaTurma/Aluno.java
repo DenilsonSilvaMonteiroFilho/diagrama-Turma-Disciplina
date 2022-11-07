@@ -7,21 +7,21 @@ import javax.persistence.Table;
 import java.util.Objects;
 
 @Entity
-@Table(name = ALUNO)
+@Table(name = "Aluno")
 public class Aluno {
 
     private static final String ALUNO = "";
     private @Id @GeneratedValue Long id;
     private String nome;
     private @GeneratedValue String matricula;
-    private Status status;
+    private StatusAluno statusAluno;
 
     public Aluno(){
 
     }
-    public Aluno(String nome, Status status){
+    public Aluno(String nome, StatusAluno statusAluno){
         this.nome = nome;
-        this.status = status;
+        this.statusAluno = statusAluno;
     }
 
     public Long getId() {
@@ -48,12 +48,12 @@ public class Aluno {
         this.matricula = matricula;
     }
 
-    public Status getStatus() {
-        return status;
+    public StatusAluno getStatus() {
+        return statusAluno;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setStatus(StatusAluno statusAluno) {
+        this.statusAluno = statusAluno;
     }
 
     @Override
@@ -62,12 +62,12 @@ public class Aluno {
         if (o == null || getClass() != o.getClass()) return false;
         Aluno aluno = (Aluno) o;
         return Objects.equals(this.id, aluno.id) && Objects.equals(this.nome, aluno.nome) &&
-                Objects.equals(this.matricula, aluno.matricula) && this.status == aluno.status;
+                Objects.equals(this.matricula, aluno.matricula) && this.statusAluno == aluno.statusAluno;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.nome, this.matricula, this.status);
+        return Objects.hash(this.id, this.nome, this.matricula, this.statusAluno);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class Aluno {
                 "id=" + this.id +
                 ", nome='" + this.nome + '\'' +
                 ", matricula='" + this.matricula + '\'' +
-                ", status=" + this.status +
+                ", statusAluno=" + this.statusAluno +
                 '}';
     }
 }
