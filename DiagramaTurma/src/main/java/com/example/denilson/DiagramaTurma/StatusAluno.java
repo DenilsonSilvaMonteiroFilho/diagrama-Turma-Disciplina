@@ -1,6 +1,6 @@
 package com.example.denilson.DiagramaTurma;
 
-public enum Status {
+public enum StatusAluno {
     MATRICULADO,
     APROVADO,
     REPROVADO
