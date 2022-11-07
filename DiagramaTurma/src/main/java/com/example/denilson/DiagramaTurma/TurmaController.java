@@ -2,6 +2,8 @@ package com.example.denilson.DiagramaTurma;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,8 +34,9 @@ public class TurmaController {
         return CollectionModel.of(employees, linkTo(methodOn(TurmaController.class).all()).withSelfRel());
     }
     @PostMapping("/turma")
-    Turma newEmployee(@RequestBody Turma newTurma) {
-        return repository.save(newTurma);
+    ResponseEntity <?> newTurma(@RequestBody Turma newTurma) {
+        EntityModel<Turma> entityModel = assembler.toModel(repository.save(newTurma));
+        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
     }
 
     @GetMapping("/turma/{id}")
@@ -46,10 +49,10 @@ public class TurmaController {
     }
 
     @PutMapping("/turma/{id}")
-    Turma replaceTurma(@RequestBody Turma newTurma, @PathVariable Long id) {
-        return repository.findById(id)
+    ResponseEntity<?> replaceTurma(@RequestBody Turma newTurma, @PathVariable Long id) {
+        Turma updatedTurma = repository.findById(id)
                 .map(turma -> {
-                    turma.setDisciplina(newTurma.getDisciplina());
+                    turma.setDisciplina( newTurma.getDisciplina());
                     turma.setProfessor(newTurma.getProfessor());
                     return repository.save(turma);
                 })
@@ -57,11 +60,16 @@ public class TurmaController {
                     newTurma.setId(id);
                     return repository.save(newTurma);
                 });
+        EntityModel<Turma> entityModel = assembler.toModel(updatedTurma);
+
+        return ResponseEntity.created((entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()))
+                .body(entityModel);
     }
 
     @DeleteMapping("/turma/{id}")
-    void deleteTurma(@PathVariable Long id) {
+    ResponseEntity<?> deleteTurma(@PathVariable Long id) {
         repository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

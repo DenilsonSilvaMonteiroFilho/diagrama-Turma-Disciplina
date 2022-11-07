@@ -16,8 +16,8 @@ class LoadDatabase {
     CommandLineRunner initDatabase(TurmaRepository repository) {
 
         return args -> {
-            log.info("Preloading " + repository.save(new Turma("Analise de Dados", "Marcus")));
-            log.info("Preloading " + repository.save(new Turma("Calculo", "Helio")));
+            log.info("Pre-loading " + repository.save(new Turma("Analise de Dados", "Marcus", "Denilson")));
+            log.info("Pre-loading " + repository.save(new Turma("Calculo", "Helio", "Denilson")));
         };
     }
 }
